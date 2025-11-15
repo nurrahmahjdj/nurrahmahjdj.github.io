@@ -1,0 +1,559 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Happy Birthday Jeffs — Surprise</title>
+  <meta name="color-scheme" content="dark">
+  <style>
+    :root{
+      --bg:#08080a;
+      --card:#0f0f12;
+      --gold: #ffd700;
+      --rose: #ffb6c1;
+      --muted:#b8b6bd;
+      --glass: rgba(255,255,255,0.03);
+      --radius:16px;
+      font-family: Inter, "Segoe UI", Roboto, system-ui, -apple-system, "Helvetica Neue", Arial;
+    }
+    html,body{
+      height:100%;
+      margin:0;
+      background: linear-gradient(180deg,#050506 0%, #0b0b0f 100%);
+      color: #efeaf0;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    /* full-screen center container */
+    .wrap{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      box-sizing:border-box;
+    }
+
+    /* card */
+    .card{
+      width:100%;
+      max-width:420px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255,215,0,0.12);
+      border-radius:var(--radius);
+      padding:20px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6), 0 0 30px rgba(255,215,0,0.03) inset;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .glow-rose{
+      position:absolute;
+      top:-70px; right:-70px;
+      width:220px; height:220px;
+      background: rgba(255,182,193,0.12);
+      border-radius:50%;
+      filter: blur(26px);
+      pointer-events:none;
+    }
+
+    h1{
+      margin:8px 0 6px;
+      font-size:20px;
+      text-align:center;
+      color:var(--gold);
+      letter-spacing:0.6px;
+    }
+
+    .sub{
+      text-align:center;
+      color:var(--muted);
+      font-size:13px;
+      margin-bottom:14px;
+    }
+
+    /* pizza area */
+    .pizza-wrap{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      margin:6px 0 12px;
+      position:relative;
+    }
+    /* svg scales nicely */
+    svg.pizza { width:280px; max-width:86%; height:auto; display:block; }
+
+    /* instruction */
+    .hint{
+      text-align:center;
+      font-size:13px;
+      color:var(--muted);
+      margin-top:8px;
+    }
+
+    /* candle clickable area - make touch-friendly */
+    .candle-btn{
+      border-radius:999px;
+      padding:8px;
+      display:inline-block;
+      touch-action:manipulation;
+      -webkit-tap-highlight-color: rgba(255,255,255,0.06);
+    }
+
+    /* flame animation */
+    .flame{
+      transform-origin: center bottom;
+      animation: flame-flicker 900ms infinite;
+    }
+    @keyframes flame-flicker{
+      0%{ transform: translateY(0) scaleY(1) scaleX(1); opacity:1; }
+      30%{ transform: translateY(-2px) scaleY(1.06) scaleX(0.98); opacity:0.96; }
+      60%{ transform: translateY(1px) scaleY(0.98) scaleX(1.02); opacity:0.98; }
+      100%{ transform: translateY(0) scaleY(1) scaleX(1); opacity:1; }
+    }
+
+    /* smoke */
+    .smoke-piece{
+      position:absolute;
+      width:10px;
+      height:10px;
+      border-radius:50%;
+      background:rgba(255,255,255,0.18);
+      filter: blur(6px);
+      opacity:0;
+      pointer-events:none;
+    }
+    @keyframes smoke-up {
+      0%{ transform: translateY(0) scale(0.6); opacity:0.9; }
+      100%{ transform: translateY(-90px) scale(1.6); opacity:0; }
+    }
+
+    /* confetti pieces */
+    .confetti{
+      position:fixed;
+      left:0; top:0;
+      width:100%; height:100%;
+      pointer-events:none;
+      overflow:hidden;
+      z-index:9999;
+    }
+    .confetti .piece{
+      position:absolute;
+      width:10px; height:14px;
+      opacity:0.95;
+      transform-origin:center;
+    }
+
+    /* final modal styling */
+    .final-modal{
+      position:fixed;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background: linear-gradient(180deg, rgba(2,2,2,0.6), rgba(2,2,2,0.75));
+      z-index:10010;
+      padding:20px;
+      box-sizing:border-box;
+    }
+    .final-modal .panel{
+      width:100%;
+      max-width:420px;
+      background: linear-gradient(180deg, #0b0b0f, #0b0b0f);
+      border-radius:14px;
+      border: 1px solid rgba(255,215,0,0.12);
+      padding:18px;
+      color:#fff;
+      text-align:left;
+      box-shadow: 0 18px 50px rgba(0,0,0,0.7);
+    }
+    .final-modal h2{
+      margin:0 0 8px;
+      color:var(--gold);
+      font-size:18px;
+    }
+    .final-modal p{ color:#f6eaf0; line-height:1.55; margin:8px 0; font-size:15px; }
+    .btn{
+      display:inline-block;
+      padding:10px 14px;
+      border-radius:10px;
+      background:linear-gradient(90deg,var(--gold), #ffbf00);
+      color:#081210;
+      font-weight:700;
+      margin-top:12px;
+      text-decoration:none;
+    }
+
+    /* initial mystery modal */
+    .mystery{
+      position:fixed;
+      inset:0;
+      z-index:10020;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background: linear-gradient(180deg, rgba(1,1,1,0.85), rgba(2,2,2,0.9));
+      padding:20px;
+      box-sizing:border-box;
+    }
+    .mystery .card{
+      max-width:360px;
+      text-align:center;
+      padding:18px;
+    }
+    .mystery p{ color:#e8dfe4; margin:12px 0; font-size:15px; }
+    .unlock{
+      display:inline-block;
+      margin-top:10px;
+      padding:12px 16px;
+      background:transparent;
+      border:1px solid rgba(255,255,255,0.06);
+      color:var(--rose);
+      border-radius:12px;
+      font-weight:700;
+      cursor:pointer;
+    }
+    .small-muted{ font-size:12px; color:var(--muted); margin-top:8px; }
+
+    /* responsive tweaks */
+    @media (max-width:420px){
+      h1{ font-size:18px; }
+      .pizza-wrap{ margin-bottom:6px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap" aria-live="polite">
+    <div class="card" role="main" aria-labelledby="title">
+      <div class="glow-rose" aria-hidden="true"></div>
+      <h1 id="title">Happy Birthday, Jeffs! 🎉</h1>
+      <div class="sub">Make a wish dulu ya — lalu klik lilinnya kalo udah.</div>
+
+      <div class="pizza-wrap" id="pizzaZone" aria-hidden="false">
+        <!-- SVG pizza cartoon with a candle on center -->
+        <!-- Candle is inside a <g id="candleGroup"> for easier control -->
+        <svg class="pizza" viewBox="0 0 400 350" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Pizza with candle">
+          <!-- shadow -->
+          <ellipse cx="200" cy="310" rx="120" ry="14" fill="rgba(0,0,0,0.45)"/>
+          <!-- pizza base -->
+          <g id="pizzaBody">
+            <circle cx="200" cy="200" r="140" fill="#f6c27a" />
+            <circle cx="200" cy="200" r="120" fill="#ffd89a" />
+            <!-- pepperoni -->
+            <g fill="#d9573b" stroke="#b33a2a" stroke-width="2">
+              <circle cx="250" cy="170" r="18"/>
+              <circle cx="220" cy="230" r="16"/>
+              <circle cx="160" cy="190" r="18"/>
+              <circle cx="190" cy="140" r="14"/>
+              <circle cx="260" cy="210" r="12"/>
+            </g>
+            <!-- basil leaves -->
+            <g fill="#3aa76a" transform="translate(-6 -4)">
+              <path d="M190 120c12 6 24 6 34 2c-7 8-19 11-31 8c-4-1-7-4-3-10z"/>
+              <path d="M145 220c10 6 22 4 30-4c-9 10-23 12-34 6c-3-2-5-6 4-2z"/>
+            </g>
+          </g>
+
+          <!-- candle group positioned roughly in center -->
+          <g id="candleGroup" transform="translate(200,130)">
+            <!-- stick / candle body -->
+            <g class="candle-btn" id="candleBtn" role="button" tabindex="0" aria-label="Tekan lilin untuk meniup">
+              <rect x="-8" y="20" width="16" height="70" rx="4" fill="#fff1f4" stroke="#ffdfe6" stroke-width="1"/>
+              <!-- stripes -->
+              <path d="M-6 28 L6 28" stroke="#ffdede" stroke-width="2" opacity="0.9"/>
+              <path d="M-6 40 L6 40" stroke="#ffdede" stroke-width="2" opacity="0.9"/>
+              <path d="M-6 54 L6 54" stroke="#ffdede" stroke-width="2" opacity="0.9"/>
+
+              <!-- flame (group) -->
+              <g id="flameGroup" transform="translate(0,14)">
+                <path class="flame" id="flameInner" d="M0 0 C6 -8 12 -16 0 -28 C-12 -16 -6 -8 0 0Z" fill="#fff8cc" />
+                <path class="flame" id="flameMid" d="M0 0 C4 -6 8 -12 0 -20 C-8 -12 -4 -6 0 0Z" fill="#ffd36a" style="opacity:0.95"/>
+                <path class="flame" id="flameOuter" d="M0 0 C2 -4 4 -8 0 -12 C-4 -8 -2 -4 0 0Z" fill="#ff6b6b" style="opacity:0.95"/>
+              </g>
+            </g>
+          </g>
+        </svg>
+      </div>
+
+      <div class="hint">Tip: tap the candle once after make-a-wish ✨</div>
+    </div>
+  </div>
+
+  <!-- confetti container -->
+  <div class="confetti" id="confettiLayer" aria-hidden="true"></div>
+
+  <!-- final modal (hidden initially) -->
+  <div id="finalModal" class="final-modal" style="display:none" role="dialog" aria-modal="true" aria-labelledby="finalTitle">
+    <div class="panel">
+      <h2 id="finalTitle">Untuk Jeffs — Surprise!</h2>
+      <p id="finalText">
+        <!-- text will be injected -->
+      </p>
+      <a class="btn" id="closeBtn" href="#" role="button">Close & Keep it in your heart</a>
+    </div>
+  </div>
+
+  <!-- initial mystery modal -->
+  <div id="mysteryModal" class="mystery" role="dialog" aria-modal="true" aria-labelledby="mysteryTitle">
+    <div class="card" aria-hidden="false">
+      <h2 id="mysteryTitle" style="color:var(--rose); margin:0 0 6px;">ssst... maaf ini ngedadak bgt karena aku gk bisa tidur</h2>
+      <p style="margin:0.2em 0;">
+        Aku udah nyiapin sesuatu buat kamu. kalo mau liat cukup tap <b>Open</b> kalau udah siap.
+      </p>
+      <button id="unlockBtn" class="unlock" aria-label="Tap to unlock surprise">Open</button>
+      <div class="small-muted">Tap memulai kejutan dan suara kecil — jangan khawatir, manis kok hehe</div>
+    </div>
+  </div>
+
+<script>
+/* ========= Audio helpers (WebAudio) =========
+   - pianoIntro() plays a gentle arpeggio/chord on unlock
+   - puffSound() plays a short "puff" when candle is pressed
+   Implemented with simple oscillators & envelopes; keeps everything local.
+*/
+(function(){
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  let ctx = null;
+
+  function ensureCtx(){
+    if(!ctx){
+      ctx = new AudioCtx();
+    }
+    return ctx;
+  }
+
+  // basic voice controller
+  function playTone(freq, type='sine', start=0, duration=0.5, gain=0.12){
+    const c = ensureCtx();
+    const o = c.createOscillator();
+    const g = c.createGain();
+    o.type = type;
+    o.frequency.value = freq;
+    g.gain.value = 0;
+    o.connect(g);
+    g.connect(c.destination);
+    const now = c.currentTime + start;
+    // envelope
+    g.gain.setValueAtTime(0.0001, now);
+    g.gain.exponentialRampToValueAtTime(gain, now + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+    o.start(now);
+    o.stop(now + duration + 0.02);
+  }
+
+  // gentle piano-like arpeggio using triangle & sine mix
+  window.pianoIntro = function(){
+    ensureCtx();
+    // simple chord: A4(440), C#5(554.37), E5(659.25) arpeggiated
+    playTone(440, 'triangle', 0, 0.7, 0.08);
+    playTone(554.37, 'sine', 0.12, 0.7, 0.07);
+    playTone(659.25, 'sine', 0.24, 0.7, 0.06);
+    // a soft bell at end
+    playTone(880, 'sine', 0.5, 0.9, 0.03);
+  }
+
+  // small puff (noise burst)
+  window.puffSound = function(){
+    const c = ensureCtx();
+    // noise buffer
+    const bufferSize = c.sampleRate * 0.25;
+    const buffer = c.createBuffer(1, bufferSize, c.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i=0;i<bufferSize;i++){
+      data[i] = (Math.random()*2-1) * Math.exp(-i/(bufferSize*0.02)); // fast decay
+    }
+    const src = c.createBufferSource();
+    src.buffer = buffer;
+    const g = c.createGain();
+    g.gain.value = 0.25;
+    src.connect(g);
+    g.connect(c.destination);
+    src.start();
+    // a low thump
+    playTone(110, 'sine', 0, 0.18, 0.06);
+  }
+
+})();
+
+/* ========= UI & interactions ========= */
+(function(){
+  const mysteryModal = document.getElementById('mysteryModal');
+  const unlockBtn = document.getElementById('unlockBtn');
+  const flameGroup = document.getElementById('flameGroup');
+  const candleBtn = document.getElementById('candleBtn');
+  const finalModal = document.getElementById('finalModal');
+  const finalText = document.getElementById('finalText');
+  const closeBtn = document.getElementById('closeBtn');
+  const confettiLayer = document.getElementById('confettiLayer');
+  const pizzaZone = document.getElementById('pizzaZone');
+
+  // name constant
+  const NAME = 'Jeffs';
+
+  // initial mystery unlock behavior (user chose: Tap once)
+  unlockBtn.addEventListener('click', function(ev){
+    // play piano intro on user interaction
+    try{ window.pianoIntro(); } catch(e){}
+    // close mystery modal
+    mysteryModal.style.display = 'none';
+    // small focus for accessibility
+    pizzaZone.querySelector('svg').focus?.();
+  });
+
+  // Make candle accessible by keyboard as well
+  candleBtn.addEventListener('keydown', function(e){
+    if(e.key === 'Enter' || e.key === ' '){
+      e.preventDefault();
+      candleBtn.click();
+    }
+  });
+
+  // Candle press handler
+  let candleBlown = false;
+  candleBtn.addEventListener('click', function(ev){
+    if(candleBlown) return;
+    candleBlown = true;
+    // 1) play puff sound
+    try{ window.puffSound(); } catch(e){}
+    // 2) extinguish flame (fade out)
+    extinguishFlame();
+    // 3) spawn smoke
+    spawnSmoke();
+    // 4) spawn confetti
+    spawnConfetti();
+    // 5) after short delay show final modal
+    setTimeout(showFinalModal, 900);
+  });
+
+  // extinguish flame (fade out SVG group)
+  function extinguishFlame(){
+    if(!flameGroup) return;
+    flameGroup.style.transition = 'opacity 420ms ease, transform 420ms ease';
+    flameGroup.style.opacity = 0;
+    flameGroup.style.transform = 'translateY(6px) scale(0.95)';
+    // also add a little flicker / bounce to candle body
+    candleBtn.animate([{ transform: 'translateY(0)' }, { transform: 'translateY(-4px)' }, { transform: 'translateY(0)' }], { duration: 420, easing: 'cubic-bezier(.2,.8,.2,1)' });
+  }
+
+  // smoke spawn (several small blurred circles)
+  function spawnSmoke(){
+    const rect = pizzaZone.getBoundingClientRect();
+    // position reference: candle center near pizzaZone center
+    const baseX = rect.left + rect.width*0.5;
+    const baseY = rect.top + rect.height*0.28;
+    for(let i=0;i<6;i++){
+      const s = document.createElement('div');
+      s.className = 'smoke-piece';
+      document.body.appendChild(s);
+      const offsetX = (Math.random()-0.5) * 24;
+      const left = baseX + offsetX;
+      const top = baseY + (Math.random()*6);
+      s.style.left = (left) + 'px';
+      s.style.top = (top) + 'px';
+      s.style.width = (8 + Math.random()*10) + 'px';
+      s.style.height = (8 + Math.random()*10) + 'px';
+      s.style.background = 'rgba(230,230,230,0.16)';
+      s.style.animation = `smoke-up ${800 + Math.random()*800}ms ease-out forwards`;
+      // remove after animation
+      setTimeout(()=> s.remove(), 2000 + Math.random()*400);
+    }
+  }
+
+  // confetti: many small rectangles launched upward and falling
+  function spawnConfetti(){
+    const N = 26;
+    const colors = ['#ff6b81','#ffd86b','#7ce0b8','#9ad0ff','#c57cff','#ffd700'];
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    for(let i=0;i<N;i++){
+      const el = document.createElement('div');
+      el.className = 'piece';
+      el.style.background = colors[i % colors.length];
+      el.style.left = (50 + (Math.random()-0.5) * 80) + '%';
+      el.style.top = (-10 + Math.random()*20) + 'px';
+      el.style.width = (6 + Math.random()*10) + 'px';
+      el.style.height = (8 + Math.random()*14) + 'px';
+      el.style.transform = `rotate(${Math.random()*360}deg)`;
+      confettiLayer.appendChild(el);
+
+      // animate with CSS keyframes via JS (motion)
+      const dx = (Math.random()-0.5) * 300;
+      const dy = (h*0.6 + Math.random()*200);
+      const rot = (Math.random()>0.5?1:-1) * (360 + Math.random()*720);
+      el.animate([
+        { transform: `translateY(0px) rotate(0deg)`, opacity:1 },
+        { transform: `translate(${dx}px, ${dy}px) rotate(${rot}deg)`, opacity:0.95 }
+      ], {
+        duration: 1200 + Math.random()*800,
+        easing: 'cubic-bezier(.15,.9,.3,1)'
+      });
+      // remove later
+      setTimeout(()=> el.remove(), 2200 + Math.random()*800);
+    }
+  }
+
+  // show final modal with playful bilingual message (Indo-dominant, English slips)
+  function showFinalModal(){
+    const text = [
+      `HAPPY BIRTHDAY SAYANGGGG! Today you get permission to eat extra pizza, laugh too loud, and be a little extra. `,
+      `Semoga tahun ini bawa kamu lebih banyak hal baik, ketenangan, dan keberanian buat ngelakuin hal-hal yang kamu impikan.`,
+      `Jangan lupa make a wish tadi ya — I secretly already wished for more silly mornings with you.`,
+      `Aku bersyukur bisa kenal kamu selama ini, dan aku harap hubungan kita bisa terus berkembang jadi sesuatu yang lebih sehat dan kuat. AAMIN!`,
+      `Enjoy your day, Jeffs! You deserve all the happiness in the world. ❤️🎂🍕`
+    ].join('<br><br>');
+
+    finalText.innerHTML = text;
+    finalModal.style.display = 'flex';
+    // focus close button for accessibility
+    closeBtn.focus();
+  }
+
+  // close final modal
+  closeBtn.addEventListener('click', function(e){
+    e.preventDefault();
+    finalModal.style.display = 'none';
+  });
+
+  // small accessibility: allow ESC to close final modal
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape'){
+      finalModal.style.display = 'none';
+      mysteryModal.style.display = 'none';
+    }
+  });
+
+  // Prevent background scroll when modals are open
+  const body = document.body;
+  const observer = new MutationObserver(function(){
+    if(mysteryModal.style.display !== 'none' || finalModal.style.display !== 'none'){
+      body.style.overflow = 'hidden';
+    }else{
+      body.style.overflow = '';
+    }
+  });
+  observer.observe(document.documentElement, { attributes: true, childList: true, subtree: true });
+
+  // small progressive enhancement: if user never presses unlock (e.g., no interaction),
+  // offer hint after 8s (keeps it playful)
+  setTimeout(()=> {
+    if(mysteryModal.style.display !== 'none'){
+      const hint = document.createElement('div');
+      hint.textContent = 'Tap Open kalau kamu penasaran 😉';
+      hint.style.fontSize = '13px';
+      hint.style.color = 'var(--muted)';
+      hint.style.marginTop = '10px';
+      const container = mysteryModal.querySelector('.card');
+      if(container && !container.querySelector('.hint-note')){
+        const n = document.createElement('div');
+        n.className = 'hint-note';
+        n.appendChild(hint);
+        container.appendChild(n);
+      }
+    }
+  }, 8000);
+
+})();
+</script>
+</body>
+</html>
